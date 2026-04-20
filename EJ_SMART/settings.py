@@ -34,9 +34,13 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Application definition
 
 INSTALLED_APPS = [
-    
     'jazzmin',
-    'rest_framework',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     'corsheaders',
     'users.apps.UsersConfig',
     'properties.apps.PropertiesConfig',
@@ -49,25 +53,19 @@ INSTALLED_APPS = [
     'favorites.apps.FavoritesConfig',
     'notifications.apps.NotificationsConfig',
     'core.apps.CoreConfig',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
 ]
 JAZZMIN_SETTINGS = {
-    # العنوان اللي بيظهر فوق على الشمال
     "site_title": "Admin Panel",
-    
-    # ترتيب الأبلكيشنز في القائمة الجانبية
+    "site_header": "EJ SMART",
+    "welcome_sign": "Welcome to EJ SMART Dashboard",
+
     "order_with_respect_to": [
-        "users",      # اليوزر أول حاجة
-        "bookings",   # الحجوزات
-        "contracts",  # العقود
-        "payments",   # المدفوعات
-        "properties", # العقارات
-        "reviews",    # التقييمات
+        "users",
+        "bookings",
+        "contracts",
+        "payments",
+        "properties",
+        "reviews",
     ],
 
     # إضافة أيقونات (اختياري بس بيخلي الشكل تحفة)
@@ -90,9 +88,10 @@ JAZZMIN_SETTINGS = {
 AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
-     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -188,12 +187,17 @@ SIMPLE_JWT = {
 }
 
 
-
-
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
-    "http://localhost:8000"
+    "http://localhost:8000",
+    "https://ejsmart-production.up.railway.app",
 ]
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+   "http://127.0.0.1:3000",
+    "https://ejsmart-production.up.railway.app",
 ]
