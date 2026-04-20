@@ -45,4 +45,6 @@ def search(request):
     ]
 
     return JsonResponse(data, safe=False)
+def home(request):
+    return JsonResponse({"message": "API is working"})
 # Create your views here.
