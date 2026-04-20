@@ -3,5 +3,7 @@ gunicorn
 whitenoise
 dj-database-url
 djangorestframework
+djangorestframework-simplejwt
 django-jazzmin
 django-cors-headers
+pyjwt
