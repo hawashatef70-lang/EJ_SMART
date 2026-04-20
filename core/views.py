@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from properties.models import Property
 from bookings.models import Booking
 from payments.models import Payment
-
+from django.http import JsonResponse
 
 @login_required
 def dashboard(request):
@@ -47,4 +47,9 @@ def search(request):
     return JsonResponse(data, safe=False)
 def home(request):
     return JsonResponse({"message": "API is working"})
+def home(request):
+    return JsonResponse({
+        "status": "ok",
+        "message": "EJ_SMART API is running"
+    })
 # Create your views here.
