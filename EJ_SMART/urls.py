@@ -18,8 +18,31 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+# 👇 Home API
+def home(request):
+    return JsonResponse({
+        "message": "EJ SMART API is running",
+        "endpoints": {
+            "admin": "/admin/",
+            "login": "/api/token/",
+            "refresh": "/api/token/refresh/",
+            "users": "/api/users/",
+            "properties": "/api/properties/",
+            "bookings": "/api/bookings/",
+            "contracts": "/api/contracts/",
+            "payments": "/api/payments/",
+            "reviews": "/api/reviews/",
+            "chat": "/api/chat/",
+            "handover": "/api/handover/",
+            "favorites": "/api/favorites/",
+            "notifications": "/api/notifications/",
+        }
+    })
+
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
