@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from .models import Property, PropertyImage, PropertyVideo
 from .serializers import PropertySerializer
 from drf_spectacular.utils import extend_schema
+import traceback
 
 # =====================================================
 # 🟦 WEB (OPTIONAL - KEEP IF YOU STILL NEED HTML)
