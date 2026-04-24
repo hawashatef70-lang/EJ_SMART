@@ -24,11 +24,22 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 # 👇 Home API
 def home(request):
     return JsonResponse({
-        "message": "EJ SMART API is running",
-        "endpoints": {
-            "admin": "/admin/",
+        "project": "EJ SMART API",
+        "status": "running 🚀",
+        "base_url": "https://ejsmart-production.up.railway.app",
+
+        "documentation": {
+            "swagger": "/api/docs/",
+            "schema": "/api/schema/"
+        },
+
+        "auth": {
             "login": "/api/token/",
             "refresh": "/api/token/refresh/",
+        },
+
+        "endpoints": {
+            "admin": "/admin/",
             "users": "/api/users/",
             "properties": "/api/properties/",
             "bookings": "/api/bookings/",
