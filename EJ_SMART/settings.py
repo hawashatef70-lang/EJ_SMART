@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cleanup.apps.CleanupConfig'  # اختياري
+    'django_cleanup.apps.CleanupConfig',  # اختياري
     'corsheaders',
     'rest_framework',
     'django_filters',
@@ -204,11 +204,7 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
 
 }
-SPECTACULAR_SETTINGS = {
-    "TITLE": "EJ_SMART API",
-    "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": True,
-}
+
 
 
 SPECTACULAR_SETTINGS = {
