@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from .models import Property, PropertyImage, PropertyVideo
 from .serializers import PropertySerializer
-
+from drf_spectacular.utils import extend_schema
 
 # =====================================================
 # 🟦 WEB (OPTIONAL - KEEP IF YOU STILL NEED HTML)
@@ -112,6 +112,7 @@ def apply_filters(request, queryset):
 # 🟢 API - LIST
 # =====================================================
 
+@extend_schema(tags=["Properties"])
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def api_properties(request):
@@ -127,6 +128,7 @@ def api_properties(request):
 # 🟢 API - DETAIL
 # =====================================================
 
+@extend_schema(tags=["Properties"])
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def api_property_detail(request, id):
@@ -140,6 +142,7 @@ def api_property_detail(request, id):
 # 🟢 API - CREATE
 # =====================================================
 
+@extend_schema(tags=["Properties"])
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_create_property(request):
@@ -164,6 +167,7 @@ def api_create_property(request):
 # 🟢 API - UPDATE
 # =====================================================
 
+@extend_schema(tags=["Properties"])
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def api_update_property(request, id):
@@ -183,6 +187,7 @@ def api_update_property(request, id):
 # 🟢 API - DELETE
 # =====================================================
 
+@extend_schema(tags=["Properties"])
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def api_delete_property(request, id):

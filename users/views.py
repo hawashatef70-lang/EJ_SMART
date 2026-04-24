@@ -5,11 +5,12 @@ from rest_framework.response import Response
 
 from .models import User
 from .serializers import UserSerializer, RegisterSerializer
-
+from drf_spectacular.utils import extend_schema
 
 # ======================
 # 🟢 REGISTER API
 # ======================
+@extend_schema(tags=["Users"])
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def api_register(request):
@@ -30,6 +31,7 @@ def api_register(request):
 # ======================
 # 🟢 LOGIN API
 # ======================
+@extend_schema(tags=["Users"])
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def api_login(request):
@@ -61,6 +63,7 @@ def api_login(request):
 # ======================
 # 👤 PROFILE
 # ======================
+@extend_schema(tags=["Users"])
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_profile(request):
@@ -72,6 +75,7 @@ def my_profile(request):
 # ======================
 # ✏️ UPDATE PROFILE
 # ======================
+@extend_schema(tags=["Users"])
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
@@ -92,6 +96,7 @@ def update_profile(request):
 # ======================
 # 🚪 LOGOUT API
 # ======================
+@extend_schema(tags=["Users"])
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_logout(request):

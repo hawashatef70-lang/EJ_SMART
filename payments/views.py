@@ -7,12 +7,13 @@ from rest_framework.response import Response
 from .models import Payment
 from .serializers import PaymentSerializer
 from bookings.models import Booking
-
+from drf_spectacular.utils import extend_schema
 
 # =====================================================
 # 🟢 CREATE PAYMENT (API ONLY)
 # =====================================================
 
+@extend_schema(tags=["Payments"])
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_make_payment(request, booking_id):
@@ -49,6 +50,7 @@ def api_make_payment(request, booking_id):
 # 🟢 MY PAYMENTS
 # =====================================================
 
+@extend_schema(tags=["Payments"])
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_payments(request):
@@ -64,6 +66,7 @@ def my_payments(request):
 # 🟢 PAYMENT DETAIL (OPTIONAL BUT IMPORTANT)
 # =====================================================
 
+@extend_schema(tags=["Payments"])
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def payment_detail(request, payment_id):

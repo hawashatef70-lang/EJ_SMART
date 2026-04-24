@@ -8,11 +8,12 @@ from rest_framework.response import Response
 from .models import Review
 from .serializers import ReviewSerializer
 from properties.models import Property
-
+from drf_spectacular.utils import extend_schema
 
 # =========================
 # 🟢 ADD REVIEW (API)
 # =========================
+@extend_schema(tags=["Reviews"])
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_review(request, property_id):
@@ -42,6 +43,7 @@ def add_review(request, property_id):
 # =========================
 # 📄 PROPERTY REVIEWS
 # =========================
+@extend_schema(tags=["Reviews"])
 @api_view(['GET'])
 def property_reviews(request, property_id):
 
