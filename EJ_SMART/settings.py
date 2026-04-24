@@ -204,6 +204,13 @@ SIMPLE_JWT = {
 
 }
 SPECTACULAR_SETTINGS = {
+    "TITLE": "EJ_SMART API",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": True,
+}
+
+
+SPECTACULAR_SETTINGS = {
     'TITLE': 'EJ_SMART API',
     'DESCRIPTION': 'Real Estate API Documentation',
     'VERSION': '1.0.0',
