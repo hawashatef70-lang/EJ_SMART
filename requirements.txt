@@ -7,3 +7,4 @@ djangorestframework-simplejwt
 django-jazzmin
 django-cors-headers
 pyjwt
+django-filter
