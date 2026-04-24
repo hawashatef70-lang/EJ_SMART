@@ -11,6 +11,6 @@ urlpatterns = [
     # ======================
     # 🟢 API (CLEAN VERSION)
     # ======================
-    path('api/create/<int:property_id>/', api_create_booking, name='api_create_booking'),
-    path('api/my/', my_bookings, name='my_bookings'),
+    path('create/<int:property_id>/', api_create_booking, name='api_create_booking'),
+    path('my/', my_bookings, name='my_bookings'),
 ]

@@ -14,13 +14,13 @@ urlpatterns = [
     # =========================
     # 🔥 API (REST STYLE)
     # =========================
-    path("api/properties/", views.api_properties, name="api_properties"),
+    path("properties/", views.api_properties, name="api_properties"),
 
-    path("api/properties/<int:id>/", views.api_property_detail, name="api_property_detail"),
+    path("properties/<int:id>/", views.api_property_detail, name="api_property_detail"),
 
-    path("api/properties/create/", views.api_create_property, name="api_create_property"),
+    path("properties/create/", views.api_create_property, name="api_create_property"),
 
-    path("api/properties/update/<int:id>/", views.api_update_property, name="api_update_property"),
+    path("properties/update/<int:id>/", views.api_update_property, name="api_update_property"),
 
-    path("api/properties/delete/<int:id>/", views.api_delete_property, name="api_delete_property"),
+    path("properties/delete/<int:id>/", views.api_delete_property, name="api_delete_property"),
 ]

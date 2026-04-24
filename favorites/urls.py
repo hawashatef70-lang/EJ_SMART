@@ -14,28 +14,28 @@ urlpatterns = [
 
     # 📄 Get all favorites
     path(
-        "api/favorites/",
+        "favorites/",
         list_favorites,
         name="list_favorites"
     ),
 
     # 🔥 Toggle favorite (add/remove in one endpoint)
     path(
-        "api/favorites/toggle/<int:property_id>/",
+        "favorites/toggle/<int:property_id>/",
         toggle_favorite,
         name="toggle_favorite"
     ),
 
     # 🔍 Single favorite detail
     path(
-        "api/favorites/<int:favorite_id>/",
+        "favorites/<int:favorite_id>/",
         favorite_detail,
         name="favorite_detail"
     ),
 
     # 🗑 Clear all favorites
     path(
-        "api/favorites/clear/",
+        "favorites/clear/",
         clear_favorites,
         name="clear_favorites"
     ),

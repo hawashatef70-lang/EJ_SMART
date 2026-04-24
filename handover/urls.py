@@ -15,35 +15,35 @@ urlpatterns = [
 
     # ➕ Create handover
     path(
-        "api/handovers/create/<int:booking_id>/",
+        "handovers/create/<int:booking_id>/",
         create_handover,
         name="create_handover"
     ),
 
     # ✔ Confirm handover (owner/tenant)
     path(
-        "api/handovers/confirm/<int:handover_id>/",
+        "handovers/confirm/<int:handover_id>/",
         confirm_handover,
         name="confirm_handover"
     ),
 
     # 📄 My handovers
     path(
-        "api/handovers/my/",
+        "handovers/my/",
         my_handovers,
         name="my_handovers"
     ),
 
     # 🔍 Single handover detail
     path(
-        "api/handovers/<int:handover_id>/",
+        "handovers/<int:handover_id>/",
         handover_detail,
         name="handover_detail"
     ),
 
     # 🗑 Delete handover (optional admin/owner control)
     path(
-        "api/handovers/delete/<int:handover_id>/",
+        "handovers/delete/<int:handover_id>/",
         delete_handover,
         name="delete_handover"
     ),

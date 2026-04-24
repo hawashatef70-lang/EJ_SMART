@@ -8,11 +8,11 @@ from .views import (
 urlpatterns = [
 
     # 📩 send message
-    path("api/messages/send/<int:user_id>/", api_send_message),
+    path("messages/send/<int:user_id>/", api_send_message),
 
     # 📥 inbox
-    path("api/messages/inbox/", api_inbox),
+    path("messages/inbox/", api_inbox),
 
     # 💬 chat history
-    path("api/messages/conversation/<int:user_id>/", api_chat_history),
+    path("messages/conversation/<int:user_id>/", api_chat_history),
 ]
