@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 # 👇 Home API
 def home(request):
     return JsonResponse({
@@ -58,12 +59,12 @@ def home(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
 
-    # 🔥 JWT (لازم في الأول)
+    # 🔐 JWT
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
-    
-    # 🔥 APIs
-    path('api/', include('users.urls')),   # ← خليها واحدة فقط
+
+    # 📦 APIs
+    path('api/', include('users.urls')),
     path("properties/", include("properties.urls")),
     path("bookings/", include("bookings.urls")),
     path("contracts/", include("contracts.urls")),
@@ -73,8 +74,14 @@ urlpatterns = [
     path("handover/", include("handover.urls")),
     path("favorites/", include("favorites.urls")),
     path("notifications/", include("notifications.urls")),
-    path("", include("core.urls")),
+
+    # 📄 Schema
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+
+    # 🔥 Swagger (الرئيسية)
+    path('', SpectacularSwaggerView.as_view(url_name='schema')),
+
+    # 📘 Swagger نسخة تانية
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
 ]
 
