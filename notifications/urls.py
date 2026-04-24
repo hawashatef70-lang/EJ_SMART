@@ -1,19 +1,26 @@
 from django.urls import path
 from .views import (
-    list_notifications,
+    my_notifications,
     mark_as_read,
-    api_notifications,
-    api_mark_as_read
+    delete_notification
 )
 
 urlpatterns = [
 
-    # 🟦 WEB (OLD - KEEP)
-    path('', list_notifications, name='notifications'),
-    path('read/<int:notification_id>/', mark_as_read, name='mark_read'),
+    # =========================
+    # 🟢 API ONLY (CLEAN)
+    # =========================
+    path("api/notifications/", my_notifications, name="my_notifications"),
+    
+    path(
+        "api/notifications/read/<int:notification_id>/",
+        mark_as_read,
+        name="mark_notification_read"
+    ),
 
-    # 🟢 API (NEW)
-    path("api/", api_notifications),
-    path("api/read/<int:notification_id>/", api_mark_as_read),
-
+    path(
+        "api/notifications/delete/<int:notification_id>/",
+        delete_notification,
+        name="delete_notification"
+    ),
 ]

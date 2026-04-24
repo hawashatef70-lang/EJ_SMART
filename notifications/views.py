@@ -1,58 +1,25 @@
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Notification
-
-
-@login_required
-def list_notifications(request):
-
-    notes = Notification.objects.filter(user=request.user).order_by('-created_at')
-
-    data = [
-        {
-            "id": n.id,
-            "message": n.message,
-            "is_read": n.is_read,
-            "created_at": n.created_at
-        }
-        for n in notes
-    ]
-
-    return JsonResponse(data, safe=False)
-
-
-@login_required
-def mark_as_read(request, notification_id):
-
-    note = get_object_or_404(Notification, id=notification_id, user=request.user)
-    note.is_read = True
-    note.save()
-
-    return JsonResponse({"message": "Marked"})
-
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 
 from .models import Notification
 from .serializers import NotificationSerializer
 
 
 # =========================
-# 📩 GET NOTIFICATIONS
+# 📩 GET MY NOTIFICATIONS
 # =========================
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def api_notifications(request):
+def my_notifications(request):
 
-    notes = Notification.objects.filter(
+    notifications = Notification.objects.filter(
         user=request.user
     ).order_by('-created_at')
 
-    serializer = NotificationSerializer(notes, many=True)
+    serializer = NotificationSerializer(notifications, many=True)
 
     return Response(serializer.data)
 
@@ -62,11 +29,64 @@ def api_notifications(request):
 # =========================
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def api_mark_as_read(request, notification_id):
+def mark_as_read(request, notification_id):
 
-    note = get_object_or_404(Notification, id=notification_id, user=request.user)
-    note.is_read = True
-    note.save()
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        user=request.user
+    )
+
+    notification.is_read = True
+    notification.save()
 
     return Response({"message": "Marked as read"})
+
+
+# =========================
+# ✔ MARK ALL AS READ 🔥
+# =========================
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_all_as_read(request):
+
+    Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).update(is_read=True)
+
+    return Response({"message": "All notifications marked as read"})
+
+
+# =========================
+# 🗑 DELETE NOTIFICATION
+# =========================
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_notification(request, notification_id):
+
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        user=request.user
+    )
+
+    notification.delete()
+
+    return Response({"message": "Deleted successfully"})
+
+
+# =========================
+# 🔢 UNREAD COUNT (IMPORTANT)
+# =========================
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def unread_count(request):
+
+    count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
+
+    return Response({"unread_count": count})
 # Create your views here.

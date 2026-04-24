@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 # 👇 Home API
 def home(request):
     return JsonResponse({
@@ -50,7 +50,7 @@ urlpatterns = [
     # 🔥 JWT (لازم في الأول)
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
-
+    
     # 🔥 APIs
     path('api/', include('users.urls')),   # ← خليها واحدة فقط
     path("properties/", include("properties.urls")),
@@ -63,6 +63,8 @@ urlpatterns = [
     path("favorites/", include("favorites.urls")),
     path("notifications/", include("notifications.urls")),
     path("", include("core.urls")),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

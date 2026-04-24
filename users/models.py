@@ -4,19 +4,16 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
 
-    USER_TYPES = (
-    ('', '----------'),  # القيمة الفاضية الأول، وبعدين الاسم اللي هيظهر
-    ('admin', 'Admin'),
-    ('owner', 'Owner'),
-    ('tenant', 'Tenant'),
-)
+    class UserTypes(models.TextChoices):
+        ADMIN = 'admin', 'Admin'
+        OWNER = 'owner', 'Owner'
+        TENANT = 'tenant', 'Tenant'
 
     user_type = models.CharField(
-    max_length=10,
-    choices=USER_TYPES,
-    default='',    # كده هيفهم إن القيمة الافتراضية هي الفراغ اللي فوق
-    null=True,     # مهمة جداً عشان قاعدة البيانات تقبل الفراغ ده
-)
+        max_length=10,
+        choices=UserTypes.choices,
+        default=UserTypes.TENANT
+    )
 
     phone = models.CharField(
         max_length=20,
@@ -32,8 +29,8 @@ class User(AbstractUser):
 
     profile_image = models.ImageField(
         upload_to='profiles/',
-        null=True,
-        blank=True
+        blank=True,
+        null=True
     )
 
     is_verified = models.BooleanField(default=False)

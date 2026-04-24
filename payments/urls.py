@@ -1,20 +1,30 @@
 from django.urls import path
-from .views import *
+from .views import (
+    api_make_payment,
+    my_payments,
+    payment_detail,
+)
 
 urlpatterns = [
 
-    path("pay/<int:booking_id>/", make_payment, name="make_payment"),
+    # 💰 Create Payment
+    path(
+        "api/payments/<int:booking_id>/",
+        api_make_payment,
+        name="make_payment"
+    ),
 
-    path("list/", payment_list, name="payment_list"),
+    # 📄 List My Payments
+    path(
+        "api/payments/",
+        my_payments,
+        name="my_payments"
+    ),
 
-]
-
-urlpatterns = [
-
-    # API
-    path("api/pay/<int:booking_id>/", api_make_payment),
-    path("api/my/", my_payments),
-
-    # القديم
-    path("pay/<int:booking_id>/", make_payment),
+    # 🔍 Payment Detail
+    path(
+        "api/payments/<int:payment_id>/detail/",
+        payment_detail,
+        name="payment_detail"
+    ),
 ]

@@ -1,91 +1,84 @@
-from django.shortcuts import render
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from .models import Favorite
-from properties.models import Property
-
-@login_required
-def add_favorite(request, property_id):
-    prop = get_object_or_404(Property, id=property_id)
-    Favorite.objects.get_or_create(user=request.user, property=prop)
-    return JsonResponse({"message": "Added to favorites"})
-
-
-@login_required
-def remove_favorite(request, property_id):
-    prop = get_object_or_404(Property, id=property_id)
-    Favorite.objects.filter(user=request.user, property=prop).delete()
-    return JsonResponse({"message": "Removed"})
-
-
-@login_required
-def list_favorites(request):
-    favorites = Favorite.objects.filter(user=request.user).select_related('property')
-
-    data = [
-        {
-            "id": f.property.id,
-            "title": f.property.title,
-            "price": f.property.price,
-        }
-        for f in favorites
-    ]
-
-    return JsonResponse(data, safe=False)
-
-
-
-
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+
 from .models import Favorite
 from properties.models import Property
 from .serializers import FavoriteSerializer
 
-# ✅ إضافة للمفضلة
+
+# =========================
+# ❤️ TOGGLE FAVORITE (BEST PRACTICE)
+# =========================
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def api_add_favorite(request, property_id):
+def toggle_favorite(request, property_id):
 
     prop = get_object_or_404(Property, id=property_id)
 
-    fav, created = Favorite.objects.get_or_create(
+    favorite = Favorite.objects.filter(
         user=request.user,
         property=prop
     )
 
-    if not created:
-        return Response({"message": "Already in favorites"})
+    # إذا موجود → احذفه
+    if favorite.exists():
+        favorite.delete()
+        return Response({"message": "Removed from favorites"})
 
-    return Response({"message": "Added"})
-
-
-# ✅ حذف من المفضلة
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def api_remove_favorite(request, property_id):
-
-    prop = get_object_or_404(Property, id=property_id)
-
-    Favorite.objects.filter(
+    # إذا مش موجود → أضفه
+    Favorite.objects.create(
         user=request.user,
         property=prop
-    ).delete()
+    )
 
-    return Response({"message": "Removed"})
+    return Response({"message": "Added to favorites"})
 
 
-# ✅ عرض المفضلة
+# =========================
+# 📄 LIST FAVORITES
+# =========================
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def api_list_favorites(request):
+def list_favorites(request):
 
-    favorites = Favorite.objects.filter(user=request.user)
+    favorites = Favorite.objects.filter(
+        user=request.user
+    ).select_related('property')
+
     serializer = FavoriteSerializer(favorites, many=True)
 
     return Response(serializer.data)
+
+
+# =========================
+# 🔍 FAVORITE DETAIL
+# =========================
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def favorite_detail(request, favorite_id):
+
+    favorite = get_object_or_404(
+        Favorite,
+        id=favorite_id,
+        user=request.user
+    )
+
+    serializer = FavoriteSerializer(favorite)
+
+    return Response(serializer.data)
+
+
+# =========================
+# 🗑 CLEAR ALL FAVORITES
+# =========================
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def clear_favorites(request):
+
+    Favorite.objects.filter(user=request.user).delete()
+
+    return Response({"message": "All favorites cleared"})
 # Create your views here.

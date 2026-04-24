@@ -24,9 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$+jl!$%6f2557l0p7&k_mw$cks!@wyk19i(t@^pchgd&1$_%#x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "ejsmart-production.up.railway.app",
+]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
@@ -42,6 +46,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'rest_framework',
+    'django_filters',
+    'drf_spectacular',
+    'rest_framework_simplejwt.token_blacklist',
     'users.apps.UsersConfig',
     'properties.apps.PropertiesConfig',
     'bookings.apps.BookingsConfig',
@@ -86,13 +94,11 @@ JAZZMIN_SETTINGS = {
     }
 }
 AUTH_USER_MODEL = 'users.User'
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.middleware.security.SecurityMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,7 +106,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'EJ_SMART.urls'
 
 TEMPLATES = [
@@ -175,16 +180,33 @@ MEDIA_ROOT = BASE_DIR / 'media'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.renderers.JSONRenderer',
     ),
+
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
+
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
 }
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
+
+}
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'EJ_SMART API',
+    'DESCRIPTION': 'Real Estate API Documentation',
+    'VERSION': '1.0.0',
 }
 
 
@@ -202,3 +224,6 @@ CORS_ALLOWED_ORIGINS = [
    "http://127.0.0.1:3000",
     "https://ejsmart-production.up.railway.app",
 ]
+CORS_ALLOW_CREDENTIALS = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'

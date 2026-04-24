@@ -1,18 +1,18 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from .models import Property, PropertyImage, PropertyVideo
 from .serializers import PropertySerializer
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+
 
 # =====================================================
-# 🟦 WEB VIEWS (OLD - KEEP AS IS)
+# 🟦 WEB (OPTIONAL - KEEP IF YOU STILL NEED HTML)
 # =====================================================
 
 def property_list(request):
@@ -27,74 +27,23 @@ def property_list(request):
             Q(address__icontains=q)
         )
 
-    city = request.GET.get('city')
-    if city:
-        properties = properties.filter(city__icontains=city)
-
-    p_type = request.GET.get('property_type')
-    if p_type:
-        properties = properties.filter(property_type=p_type)
-
-    available = request.GET.get('is_available')
-    if available:
-        is_avail_bool = True if available.lower() == 'true' else False
-        properties = properties.filter(is_available=is_avail_bool)
-    else:
-        properties = properties.filter(is_available=True)
-
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-
-    if min_price:
-        properties = properties.filter(price__gte=min_price)
-    if max_price:
-        properties = properties.filter(price__lte=max_price)
-
-    min_area = request.GET.get('min_area')
-    max_area = request.GET.get('max_area')
-
-    if min_area:
-        properties = properties.filter(area__gte=min_area)
-    if max_area:
-        properties = properties.filter(area__lte=max_area)
-
-    bedrooms = request.GET.get('bedrooms')
-    if bedrooms:
-        properties = properties.filter(bedrooms=bedrooms)
-
-    bathrooms = request.GET.get('bathrooms')
-    if bathrooms:
-        properties = properties.filter(bathrooms=bathrooms)
-
-    sort_by = request.GET.get('sort_by')
-
-    sort_options = {
-        'price_asc': 'price',
-        'price_desc': '-price',
-        'area_asc': 'area',
-        'area_desc': '-area',
-        'newest': '-created_at'
-    }
-
-    properties = properties.order_by(sort_options.get(sort_by, '-created_at'))
-
     return render(request, "properties/list.html", {"properties": properties})
 
 
 def property_detail(request, id):
-    property = get_object_or_404(Property, id=id)
+    prop = get_object_or_404(Property, id=id)
 
     return render(request, "properties/detail.html", {
-        "property": property,
-        "images": property.images.all(),
-        "videos": property.videos.all()
+        "property": prop,
+        "images": prop.images.all(),
+        "videos": prop.videos.all()
     })
 
 
 @login_required
 def create_property(request):
     if request.user.user_type != 'owner' or not request.user.is_verified:
-        messages.error(request, "عذراً، يجب توثيق حسابك كمالك.")
+        messages.error(request, "غير مسموح لك بإضافة عقارات")
         return redirect('property_list')
 
     if request.method == "POST":
@@ -122,17 +71,14 @@ def create_property(request):
 
 
 # =====================================================
-# 🟢 API VIEWS (NEW)
+# 🟢 API HELPERS
 # =====================================================
 
-@api_view(['GET'])
-def api_properties(request):
-
-    properties = Property.objects.all()
+def apply_filters(request, queryset):
 
     q = request.GET.get('q')
     if q:
-        properties = properties.filter(
+        queryset = queryset.filter(
             Q(title__icontains=q) |
             Q(description__icontains=q) |
             Q(city__icontains=q) |
@@ -141,31 +87,58 @@ def api_properties(request):
 
     city = request.GET.get('city')
     if city:
-        properties = properties.filter(city__icontains=city)
+        queryset = queryset.filter(city__icontains=city)
 
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
     if min_price:
-        properties = properties.filter(price__gte=min_price)
+        queryset = queryset.filter(price__gte=min_price)
     if max_price:
-        properties = properties.filter(price__lte=max_price)
+        queryset = queryset.filter(price__lte=max_price)
+
+    property_type = request.GET.get('property_type')
+    if property_type:
+        queryset = queryset.filter(property_type=property_type)
+
+    is_available = request.GET.get('is_available')
+    if is_available:
+        queryset = queryset.filter(is_available=is_available.lower() == 'true')
+
+    return queryset
+
+
+# =====================================================
+# 🟢 API - LIST
+# =====================================================
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_properties(request):
+
+    properties = Property.objects.all()
+    properties = apply_filters(request, properties)
 
     serializer = PropertySerializer(properties, many=True)
     return Response(serializer.data)
 
 
+# =====================================================
+# 🟢 API - DETAIL
+# =====================================================
+
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def api_property_detail(request, id):
 
-    try:
-        prop = Property.objects.get(id=id)
-    except Property.DoesNotExist:
-        return Response({"error": "Property not found"}, status=404)
-
+    prop = get_object_or_404(Property, id=id)
     serializer = PropertySerializer(prop)
     return Response(serializer.data)
 
+
+# =====================================================
+# 🟢 API - CREATE
+# =====================================================
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -186,17 +159,18 @@ def api_create_property(request):
 
     return Response(serializer.errors, status=400)
 
+
+# =====================================================
+# 🟢 API - UPDATE
+# =====================================================
+
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def api_update_property(request, id):
-    try:
-        prop = Property.objects.get(id=id)
-    except Property.DoesNotExist:
-        return Response({"error": "Not found"}, status=404)
 
-    if not request.user.is_authenticated:
-        return Response({"error": "Authentication required"}, status=401)
+    prop = get_object_or_404(Property, id=id)
 
-    serializer = PropertySerializer(prop, data=request.data)
+    serializer = PropertySerializer(prop, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
@@ -204,15 +178,16 @@ def api_update_property(request, id):
 
     return Response(serializer.errors, status=400)
 
+
+# =====================================================
+# 🟢 API - DELETE
+# =====================================================
+
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def api_delete_property(request, id):
-    try:
-        prop = Property.objects.get(id=id)
-    except Property.DoesNotExist:
-        return Response({"error": "Not found"}, status=404)
 
-    if not request.user.is_authenticated:
-        return Response({"error": "Authentication required"}, status=401)
-
+    prop = get_object_or_404(Property, id=id)
     prop.delete()
+
     return Response({"message": "Deleted successfully"})

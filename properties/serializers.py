@@ -2,28 +2,35 @@ from rest_framework import serializers
 from .models import Property, PropertyImage, PropertyVideo
 
 
+# 🖼️ Property Images
 class PropertyImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyImage
         fields = ['id', 'image']
 
 
+# 🎥 Property Videos
 class PropertyVideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyVideo
         fields = ['id', 'video']
 
 
+# 🏠 Property Main Serializer
 class PropertySerializer(serializers.ModelSerializer):
 
     images = PropertyImageSerializer(many=True, read_only=True)
     videos = PropertyVideoSerializer(many=True, read_only=True)
 
+    owner_username = serializers.ReadOnlyField(source='owner.username')
+
     class Meta:
         model = Property
+
         fields = [
             'id',
             'owner',
+            'owner_username',
             'title',
             'description',
             'city',
@@ -39,5 +46,8 @@ class PropertySerializer(serializers.ModelSerializer):
             'videos',
         ]
 
-        # 🔐 حماية مهمة جدًا
-        read_only_fields = ['owner', 'created_at']
+        read_only_fields = [
+            'owner',
+            'created_at',
+            'owner_username'
+        ]

@@ -3,10 +3,14 @@ from .views import create_booking, api_create_booking, my_bookings
 
 urlpatterns = [
 
-    # 🟦 WEB (OLD - KEEP)
+    # ======================
+    # 🟦 WEB (OLD - optional keep)
+    # ======================
     path('create/<int:property_id>/', create_booking, name='create_booking'),
 
-    # 🟢 API (NEW)
-    path("api/create/<int:property_id>/", api_create_booking),
-    path("api/my/", my_bookings),
+    # ======================
+    # 🟢 API (CLEAN VERSION)
+    # ======================
+    path('api/create/<int:property_id>/', api_create_booking, name='api_create_booking'),
+    path('api/my/', my_bookings, name='my_bookings'),
 ]

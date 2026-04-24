@@ -1,88 +1,84 @@
 from django.db import models
 from bookings.models import Booking
 
-# 1. موديل العقد
+
+# =========================
+# 📄 CONTRACT MODEL
+# =========================
 class Contract(models.Model):
 
-    STATUS = (
+    STATUS_CHOICES = (
         ('draft', 'Draft'),
         ('sent', 'Sent'),
         ('signed', 'Signed'),
+        ('expired', 'Expired'),
+        ('cancelled', 'Cancelled'),
     )
 
     booking = models.OneToOneField(
         Booking,
         on_delete=models.CASCADE,
-        verbose_name="Booking"
+        related_name="contract"
     )
 
-    rent_amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Rent Amount"
-    )
+    rent_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    deposit = models.DecimalField(max_digits=10, decimal_places=2)
 
-    deposit = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Deposit"
-    )
+    start_date = models.DateField()
+    end_date = models.DateField()
 
-    start_date = models.DateField(verbose_name="Start Date")
-    end_date = models.DateField(verbose_name="End Date")
+    contract_file = models.FileField(upload_to="contracts/")
 
-    contract_file = models.FileField(
-        upload_to="contracts/",
-        verbose_name="Contract File"
-    )
+    signed = models.BooleanField(default=False)
 
-    signed = models.BooleanField(default=False, verbose_name="Signed")
-
-    # ✅ الصح هنا
     status = models.CharField(
         max_length=20,
-        choices=STATUS,
+        choices=STATUS_CHOICES,
         default='draft'
     )
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Created At"
-    )
-
-    def __str__(self):
-        return f"Contract {self.id} - Booking {self.booking.id}"
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Contract"
-        verbose_name_plural = "Contracts"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['booking']),
+        ]
+
+    def __str__(self):
+        return f"Contract #{self.id} - Booking #{self.booking.id}"
 
 
-# 2. موديل التوقيع
+# =========================
+# ✍️ CONTRACT SIGNATURE MODEL
+# =========================
 class ContractSignature(models.Model):
 
     contract = models.OneToOneField(
         Contract,
         on_delete=models.CASCADE,
-        related_name='signature_info',
-        verbose_name="Contract"
+        related_name='signature'
     )
 
     signature_image = models.ImageField(
         upload_to='signatures/%Y/%m/',
         null=True,
-        blank=True,
-        verbose_name="Signature Image"
+        blank=True
     )
 
-    signed_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Signed At"
-    )
+    signed_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Signature for Contract {self.contract.id}"
+    signed_by = models.ForeignKey(
+        'users.User',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
-        verbose_name = "Contract Signature"
-        verbose_name_plural = "Contract Signatures"
+        ordering = ['-signed_at']
+
+    def __str__(self):
+        return f"Signature - Contract #{self.contract.id}"
