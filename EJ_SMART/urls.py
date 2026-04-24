@@ -65,15 +65,15 @@ urlpatterns = [
 
     # 📦 APIs
     path('api/', include('users.urls')),
-    path("properties/", include("properties.urls")),
-    path("bookings/", include("bookings.urls")),
-    path("contracts/", include("contracts.urls")),
-    path("payments/", include("payments.urls")),
-    path("reviews/", include("reviews.urls")),
-    path("chat/", include("chat.urls")),
-    path("handover/", include("handover.urls")),
-    path("favorites/", include("favorites.urls")),
-    path("notifications/", include("notifications.urls")),
+    path("api/properties/", include("properties.urls")),
+    path("api/bookings/", include("bookings.urls")),
+    path("api/contracts/", include("contracts.urls")),
+    path("api/payments/", include("payments.urls")),
+    path("api/reviews/", include("reviews.urls")),
+    path("api/chat/", include("chat.urls")),
+    path("api/handover/", include("handover.urls")),
+    path("api/favorites/", include("favorites.urls")),
+    path("api/notifications/", include("notifications.urls")),
 
     # 📄 Schema
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
