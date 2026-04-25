@@ -113,7 +113,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    ...
 ]
+
 ROOT_URLCONF = 'EJ_SMART.urls'
 
 TEMPLATES = [
@@ -230,10 +233,12 @@ CSRF_TRUSTED_ORIGINS = [
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [ 
     "http://localhost:3000",
    "http://127.0.0.1:3000",
     "https://ejsmart-production.up.railway.app",
+    "http://localhost:3000",
+    "https://your-frontend-domain.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
 SECURE_BROWSER_XSS_FILTER = True
