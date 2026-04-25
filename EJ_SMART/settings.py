@@ -38,6 +38,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Application definition
 INSTALLED_APPS = [
     'jazzmin',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,9 +48,11 @@ INSTALLED_APPS = [
 
     'django_cleanup.apps.CleanupConfig',
     'corsheaders',
+    
     'rest_framework',
     'django_filters',
     'drf_spectacular',
+    
     'rest_framework_simplejwt.token_blacklist',
 
     'users.apps.UsersConfig',
@@ -61,7 +64,9 @@ INSTALLED_APPS = [
     'chat.apps.ChatConfig',
     'handover.apps.HandoverConfig',
     'favorites.apps.FavoritesConfig',
+    
     'notifications.apps.NotificationsConfig',
+    
     'core.apps.CoreConfig',
 ]
 
