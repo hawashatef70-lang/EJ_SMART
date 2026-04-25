@@ -104,7 +104,7 @@ JAZZMIN_SETTINGS = {
 AUTH_USER_MODEL = 'users.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -238,7 +238,6 @@ CORS_ALLOWED_ORIGINS = [
    "http://127.0.0.1:3000",
     "https://ejsmart-production.up.railway.app",
     "http://localhost:3000",
-    "https://your-frontend-domain.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
 SECURE_BROWSER_XSS_FILTER = True
