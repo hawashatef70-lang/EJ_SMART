@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
+from django.views.generic import RedirectView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 # 👇 Home API
@@ -56,6 +57,7 @@ def home(request):
 
 
 urlpatterns = [
+    path("", RedirectView.as_view(url="/api/docs/", permanent=False)),
     path("",home),
     
     path("admin/", admin.site.urls),
