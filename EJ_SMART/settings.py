@@ -36,7 +36,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'jazzmin',
     'django.contrib.admin',
@@ -45,12 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cleanup.apps.CleanupConfig',  # اختياري
+
+    'django_cleanup.apps.CleanupConfig',
     'corsheaders',
     'rest_framework',
     'django_filters',
     'drf_spectacular',
     'rest_framework_simplejwt.token_blacklist',
+
     'users.apps.UsersConfig',
     'properties.apps.PropertiesConfig',
     'bookings.apps.BookingsConfig',
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     'notifications.apps.NotificationsConfig',
     'core.apps.CoreConfig',
 ]
+
 JAZZMIN_SETTINGS = {
     "site_title": "Admin Panel",
     "site_header": "EJ SMART",
