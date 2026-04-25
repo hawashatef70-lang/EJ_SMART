@@ -21,7 +21,6 @@ from django.conf.urls.static import static
 from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-
 # 👇 Home API
 def home(request):
     return JsonResponse({
@@ -57,6 +56,8 @@ def home(request):
 
 
 urlpatterns = [
+    path("",home),
+    
     path("admin/", admin.site.urls),
 
     # 🔐 JWT
