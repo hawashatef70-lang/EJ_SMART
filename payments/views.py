@@ -80,3 +80,38 @@ def payment_detail(request, payment_id):
     serializer = PaymentSerializer(payment)
 
     return Response(serializer.data)
+
+# ✏️ UPDATE PAYMENT
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_payment(request, payment_id):
+
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    # 🔐 check owner
+    if payment.booking.tenant != request.user:
+        return Response({"error": "Not allowed"}, status=403)
+
+    serializer = PaymentSerializer(payment, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+
+    return Response(serializer.errors, status=400)
+
+
+# 🗑 DELETE PAYMENT
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_payment(request, payment_id):
+
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    # 🔐 check owner
+    if payment.booking.tenant != request.user:
+        return Response({"error": "Not allowed"}, status=403)
+
+    payment.delete()
+
+    return Response({"message": "Payment deleted"})

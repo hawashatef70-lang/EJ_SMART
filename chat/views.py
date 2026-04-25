@@ -91,5 +91,21 @@ def api_inbox(request):
             })
 
     return Response(inbox)
+api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def mark_as_read(request, user_id):
+    """
+    Mark all messages from a specific user as read
+    """
 
+    updated = Message.objects.filter(
+        sender_id=user_id,
+        receiver=request.user,
+        is_read=False
+    ).update(is_read=True)
+
+    return Response({
+        "message": "Messages marked as read",
+        "updated_count": updated
+    })
 # Create your views here.

@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from .models import Review
@@ -10,10 +10,15 @@ from .serializers import ReviewSerializer
 from properties.models import Property
 from drf_spectacular.utils import extend_schema
 
+
 # =========================
 # 🟢 ADD REVIEW (API)
 # =========================
-@extend_schema(tags=["Reviews"])
+@extend_schema(
+    tags=["Reviews"],
+    request=ReviewSerializer,
+    responses=ReviewSerializer
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_review(request, property_id):
@@ -26,7 +31,7 @@ def add_review(request, property_id):
     if not rating or not comment:
         return Response({"error": "rating and comment are required"}, status=400)
 
-    # optional: منع تكرار review
+    # 🚫 منع التكرار
     if Review.objects.filter(user=request.user, property=property_obj).exists():
         return Response({"error": "You already reviewed this property"}, status=400)
 
@@ -43,8 +48,12 @@ def add_review(request, property_id):
 # =========================
 # 📄 PROPERTY REVIEWS
 # =========================
-@extend_schema(tags=["Reviews"])
+@extend_schema(
+    tags=["Reviews"],
+    responses=ReviewSerializer(many=True)
+)
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def property_reviews(request, property_id):
 
     property_obj = get_object_or_404(Property, id=property_id)

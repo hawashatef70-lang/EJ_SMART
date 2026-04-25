@@ -1,26 +1,20 @@
 from django.urls import path
-from .views import (
-    my_notifications,
-    mark_as_read,
-    delete_notification
-)
+from . import views
 
 urlpatterns = [
 
-    # =========================
-    # 🟢 API ONLY (CLEAN)
-    # =========================
-    path("notifications/", my_notifications, name="my_notifications"),
-    
-    path(
-        "notifications/read/<int:notification_id>/",
-        mark_as_read,
-        name="mark_notification_read"
-    ),
+    # 📩 كل الإشعارات
+    path("", views.my_notifications),
 
-    path(
-        "notifications/delete/<int:notification_id>/",
-        delete_notification,
-        name="delete_notification"
-    ),
+    # ✔ إشعار واحد قرأ
+    path("read/<int:notification_id>/", views.mark_as_read),
+
+    # ✔ كلهم اتقرو
+    path("read-all/", views.mark_all_as_read),
+
+    # 🗑 حذف إشعار
+    path("delete/<int:notification_id>/", views.delete_notification),
+
+    # 🔢 عدد غير المقروء
+    path("unread-count/", views.unread_count),
 ]

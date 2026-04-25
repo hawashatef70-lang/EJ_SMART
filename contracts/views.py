@@ -1,8 +1,4 @@
-import base64
-
 from django.shortcuts import get_object_or_404
-from django.core.files.base import ContentFile
-
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,29 +8,74 @@ from .serializers import ContractSerializer
 
 
 # =========================
-# 🔐 HELPER (reuse logic)
+# ➕ CREATE CONTRACT
 # =========================
-def _get_contract_for_user(contract_id, user):
-    contract = get_object_or_404(Contract, id=contract_id)
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def api_create_contract(request):
 
-    if contract.booking.tenant != user:
-        return None, Response({"error": "Not allowed"}, status=403)
+    serializer = ContractSerializer(data=request.data)
 
-    return contract, None
+    if serializer.is_valid():
+        contract = serializer.save()
+
+        return Response({
+            "message": "Contract created successfully",
+            "data": ContractSerializer(contract).data
+        })
+
+    return Response(serializer.errors, status=400)
 
 
 # =========================
-# 📄 CONTRACT DETAIL
+# 📄 DETAIL CONTRACT
 # =========================
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def api_contract_detail(request, id):
 
-    contract, error = _get_contract_for_user(id, request.user)
-    if error:
-        return error
+    contract = get_object_or_404(Contract, id=id)
 
     return Response(ContractSerializer(contract).data)
+
+
+# =========================
+# ✏️ UPDATE CONTRACT
+# =========================
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def api_update_contract(request, id):
+
+    contract = get_object_or_404(Contract, id=id)
+
+    serializer = ContractSerializer(
+        contract,
+        data=request.data,
+        partial=True
+    )
+
+    if serializer.is_valid():
+        serializer.save()
+
+        return Response({
+            "message": "Contract updated successfully",
+            "data": serializer.data
+        })
+
+    return Response(serializer.errors, status=400)
+
+
+# =========================
+# 🗑 DELETE CONTRACT
+# =========================
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def api_delete_contract(request, id):
+
+    contract = get_object_or_404(Contract, id=id)
+    contract.delete()
+
+    return Response({"message": "Contract deleted successfully"})
 
 
 # =========================
@@ -42,58 +83,27 @@ def api_contract_detail(request, id):
 # =========================
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def api_sign_contract(request, contract_id):
+def api_sign_contract(request, id):
 
-    contract, error = _get_contract_for_user(contract_id, request.user)
-    if error:
-        return error
+    contract = get_object_or_404(Contract, id=id)
 
     signature_data = request.data.get('signature_image')
 
     if not signature_data:
         return Response({"error": "No signature provided"}, status=400)
 
-    try:
-        format, imgstr = signature_data.split(';base64,')
-        ext = format.split('/')[-1]
+    ContractSignature.objects.update_or_create(
+        contract=contract,
+        defaults={
+            "signature_image": signature_data,
+            "signed_by": request.user
+        }
+    )
 
-        file = ContentFile(
-            base64.b64decode(imgstr),
-            name=f'sign_{contract_id}.{ext}'
-        )
+    contract.status = "signed"
+    contract.save()
 
-        ContractSignature.objects.update_or_create(
-            contract=contract,
-            defaults={'signature_image': file, 'signed_by': request.user}
-        )
-
-        contract.signed = True
-        contract.status = "signed"
-        contract.save()
-
-        return Response({"message": "Contract signed successfully"})
-
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
-
-
-# =========================
-# 📥 DOWNLOAD CONTRACT
-# =========================
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def api_download_contract(request, id):
-
-    contract, error = _get_contract_for_user(id, request.user)
-    if error:
-        return error
-
-    if not contract.contract_file:
-        return Response({"error": "No file found"}, status=404)
-
-    return Response({
-        "file_url": contract.contract_file.url
-    })
+    return Response({"message": "Contract signed successfully"})
 
 
 # =========================
@@ -103,11 +113,26 @@ def api_download_contract(request, id):
 @permission_classes([IsAuthenticated])
 def api_send_contract(request, id):
 
-    contract, error = _get_contract_for_user(id, request.user)
-    if error:
-        return error
+    contract = get_object_or_404(Contract, id=id)
 
     contract.status = "sent"
-    contract.save(update_fields=["status"])
+    contract.save()
 
     return Response({"message": "Contract sent successfully"})
+
+
+# =========================
+# 📥 DOWNLOAD CONTRACT
+# =========================
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_download_contract(request, id):
+
+    contract = get_object_or_404(Contract, id=id)
+
+    if not contract.contract_file:
+        return Response({"error": "No file found"}, status=404)
+
+    return Response({
+        "file_url": contract.contract_file.url
+    })

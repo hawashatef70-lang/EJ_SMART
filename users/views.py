@@ -3,14 +3,18 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from .models import User
 from .serializers import UserSerializer, RegisterSerializer
 from drf_spectacular.utils import extend_schema
+
 
 # ======================
 # 🟢 REGISTER API
 # ======================
-@extend_schema(tags=["Users"])
+@extend_schema(
+    tags=["Users"],
+    request=RegisterSerializer,
+    responses={200: None}
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def api_register(request):
@@ -31,7 +35,9 @@ def api_register(request):
 # ======================
 # 🟢 LOGIN API
 # ======================
-@extend_schema(tags=["Users"])
+@extend_schema(
+    tags=["Users"]
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def api_login(request):
@@ -42,7 +48,7 @@ def api_login(request):
     user = authenticate(username=username, password=password)
 
     if user:
-        login(request, user)  # optional (لو عايز session كمان)
+        login(request, user)
 
         return Response({
             "message": "Login success",
@@ -63,7 +69,10 @@ def api_login(request):
 # ======================
 # 👤 PROFILE
 # ======================
-@extend_schema(tags=["Users"])
+@extend_schema(
+    tags=["Users"],
+    responses=UserSerializer
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def my_profile(request):
@@ -75,7 +84,11 @@ def my_profile(request):
 # ======================
 # ✏️ UPDATE PROFILE
 # ======================
-@extend_schema(tags=["Users"])
+@extend_schema(
+    tags=["Users"],
+    request=UserSerializer,
+    responses=UserSerializer
+)
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
@@ -96,10 +109,13 @@ def update_profile(request):
 # ======================
 # 🚪 LOGOUT API
 # ======================
-@extend_schema(tags=["Users"])
+@extend_schema(
+    tags=["Users"]
+)
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def api_logout(request):
+
     logout(request)
     return Response({"message": "Logged out successfully"})
 # Create your views here.

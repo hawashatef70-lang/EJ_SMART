@@ -1,42 +1,17 @@
 from django.urls import path
-from .views import (
-    toggle_favorite,
-    list_favorites,
-    favorite_detail,
-    clear_favorites
-)
+from . import views
 
 urlpatterns = [
 
-    # ======================
-    # 🟢 FAVORITES API ONLY
-    # ======================
+    # ❤️ كل المفضلة
+    path("", views.list_favorites),
 
-    # 📄 Get all favorites
-    path(
-        "favorites/",
-        list_favorites,
-        name="list_favorites"
-    ),
+    # 🔥 إضافة / حذف (toggle)
+    path("toggle/<int:property_id>/", views.toggle_favorite),
 
-    # 🔥 Toggle favorite (add/remove in one endpoint)
-    path(
-        "favorites/toggle/<int:property_id>/",
-        toggle_favorite,
-        name="toggle_favorite"
-    ),
+    # 🔍 تفاصيل مفضلة واحدة
+    path("<int:favorite_id>/", views.favorite_detail),
 
-    # 🔍 Single favorite detail
-    path(
-        "favorites/<int:favorite_id>/",
-        favorite_detail,
-        name="favorite_detail"
-    ),
-
-    # 🗑 Clear all favorites
-    path(
-        "favorites/clear/",
-        clear_favorites,
-        name="clear_favorites"
-    ),
+    # 🗑 حذف كل المفضلة
+    path("clear/", views.clear_favorites),
 ]
