@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_verified',
             'created_at',
         ]
-        read_only_fields = ['id', 'is_verified', 'created_at']
+        read_only_fields = ['id', 'is_verified', 'created_at', 'national_id']
 
 
 class RegisterSerializer(serializers.ModelSerializer):

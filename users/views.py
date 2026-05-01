@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from .serializers import UserSerializer, RegisterSerializer
 from drf_spectacular.utils import extend_schema
-
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # ======================
 # 🟢 REGISTER API
@@ -48,10 +48,12 @@ def api_login(request):
     user = authenticate(username=username, password=password)
 
     if user:
-        login(request, user)
+        refresh = RefreshToken.for_user(user)
 
         return Response({
             "message": "Login success",
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
             "user": {
                 "id": user.id,
                 "username": user.username,
