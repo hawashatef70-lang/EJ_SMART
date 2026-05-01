@@ -202,8 +202,6 @@ REST_FRAMEWORK = {
     ),
 
     'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
-
-    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
 }
 
 SIMPLE_JWT = {
